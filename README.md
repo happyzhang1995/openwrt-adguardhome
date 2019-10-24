@@ -2,5 +2,5 @@
 
 - 根据其他软件包修改的，需配合luci-app-AdGuardHome，请点击[此处](https://github.com/happyzhang1995/luci-app-adguardhome). 
 
-目前版本v0.99.0
+- adguardhome版本：v0.99.0
 
