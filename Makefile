@@ -1,5 +1,7 @@
 #
-# Copyright (C) 2015-2016 OpenWrt.org
+# Copyright (C) 2019 OpenWrt.org
+#
+# KFERMercer <KFER.Mercer@gmail.com>
 #
 # This is free software, licensed under the GNU General Public License v3.
 #
@@ -7,61 +9,78 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=AdGuardHome
+PROJECT_NAME:=AdGuardHome
 PKG_VERSION:=v0.99.2
-PKG_RELEASE=2
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_RELEASE:=2
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
-	TITLE:=AdGuardHome
-	DEPENDS:=
-	URL:=https://github.com/AdguardTeam/AdGuardHome/releases
+	TITLE:=Network-wide ads & trackers blocking DNS server
+	URL:=https://github.com/AdguardTeam/AdGuardHome
 endef
+
 
 define Package/$(PKG_NAME)/description
-AdGuardHome
+Network-wide ads & trackers blocking DNS server
 endef
 
-ifeq ($(ARCH),x86_64)
-	PKG_ARCH_AdGuardHome:=linux_amd64
-endif
+STRIP:=true
+
 ifeq ($(ARCH),i386)
-	PKG_ARCH_AdGuardHome:=linux_386
-endif
-ifeq ($(ARCH),mipsel)
-	PKG_ARCH_AdGuardHome:=linux_mipsle
-endif
-ifeq ($(ARCH),mips)
-	PKG_ARCH_AdGuardHome:=linux_mips
-endif
-ifeq ($(ARCH),arm)
-	PKG_ARCH_AdGuardHome:=linux_arm
-endif
-ifeq ($(ARCH),aarch64)
-	PKG_ARCH_AdGuardHome:=linux_amd64
+	PKG_ARCH_ADGUARDHOME:=386
 endif
 
+ifeq ($(ARCH),x86_64)
+	PKG_ARCH_ADGUARDHOME:=amd64
+endif
+
+ifeq ($(ARCH),mipsel)
+	PKG_ARCH_ADGUARDHOME:=mipsle
+endif
+
+ifeq ($(ARCH),mips)
+	PKG_ARCH_ADGUARDHOME:=mips
+endif
+
+ifeq ($(ARCH),arm)
+	PKG_ARCH_ADGUARDHOME:=arm
+endif
+
+ifeq ($(ARCH),arm64)
+	PKG_ARCH_ADGUARDHOME:=arm64
+endif
+
+ifeq ($(ARCH),aarch64)
+	PKG_ARCH_ADGUARDHOME:=arm64
+endif
+
+TAR_NAME:=AdGuardHome_linux_$(PKG_ARCH_ADGUARDHOME)
+
+PKG_SOURCE:=$(TAR_NAME).tar.gz
+
+PKG_SOURCE_URL:=https://github.com/AdguardTeam/AdGuardHome/releases/download/$(PKG_VERSION)/
+
+UNTAR_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/$(PKG_NAME)-extract/$(PKG_ARCH_ADGUARDHOME)
+
+PKG_HASH:=skip
+
 define Build/Prepare
-	[ ! -f $(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz ] && wget  https://github.com/AdguardTeam/AdGuardHome/releases/download/$(PKG_VERSION)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz -O $(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz
-	tar -xzvf $(PKG_BUILD_DIR)/AdGuardHome_$(PKG_ARCH_AdGuardHome).tar.gz -C $(PKG_BUILD_DIR)
+	mkdir -vp $(UNTAR_DIR)
+	tar -zxvf $(DL_DIR)/$(PKG_SOURCE) -C $(UNTAR_DIR)
 endef
 
 define Build/Configure
 endef
 
 define Build/Compile
-	chmod +x $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome && upx --lzma --ultra-brute $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(CP) -r ./files/usr/bin/AdGuardHome $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/AdGuardHome/AdGuardHome $(1)/usr/bin/AdGuardHome/AdGuardHome
-	$(INSTALL_DIR) $(1)/etc/AdGuardHome
-	$(CP) -r ./files/etc/AdGuardHome $(1)/etc
+	$(INSTALL_DIR) $(1)/usr/bin/AdGuardHome
+	$(INSTALL_BIN) $(UNTAR_DIR)/*/$(PROJECT_NAME) $(1)/usr/bin/AdGuardHome/$(PKG_NAME)
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
