@@ -1,7 +1,8 @@
 # openwrt-adguardhome
 
-- 根据KFERMercer软件包修改，请点击[此处](https://github.com/KFERMercer/openwrt-adguardhome)
-需配合luci-app-AdGuardHome，请点击[此处](https://github.com/happyzhang1995/luci-app-adguardhome). 
+- 根据KFERMercer的[openwrt-adguardhome](https://github.com/KFERMercer/openwrt-adguardhome)修改
+  - 修改内容：更改安装
+- 可配合[luci-app-AdGuardHome](https://github.com/happyzhang1995/luci-app-adguardhome)启动
 
 - adguardhome版本：v0.99.2
 
